@@ -6,6 +6,10 @@ defaultTrigger = "$"
 
 leakServer = 577069622105210900
 
+driverPATH = "C:\\Program Files (x86)\\chromedriver.exe" 
+synctubeLink = "https://sync-tube.de/create"
+
+
 auditLogCategory = {
   discord.AuditLogActionCategory.create: "Create: ",
   discord.AuditLogActionCategory.update: "Update: ",

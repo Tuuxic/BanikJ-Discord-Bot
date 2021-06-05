@@ -3,6 +3,7 @@ import asyncio
 import discord
 import botData
 from random import choice
+import requests
 
 bot = discord.Client()
 
@@ -51,7 +52,7 @@ Ich habe meine Auswahl schon getroffen. Nun bist du dran!
 
 async def saveAuditLog(guild):
 
-  with open(f'log_{guild.name.replace(" ", "")}.txt', 'w+') as f:
+  with open(f'log_Folder\\log_{guild.name.replace(" ", "")}.txt', 'w+') as f:
     async for entry in guild.audit_logs(limit=100):
       logType = botData.auditLogCategory[entry.category]
       logAction = botData.actionType[entry.action]
@@ -61,7 +62,7 @@ async def saveAuditLog(guild):
         f.write('{0}{1.user} performed the action \"{2}\"'.format(logType, entry, logAction))
       f.write("\n")
     
-  return f'log_{guild.name.replace(" ", "")}.txt'  # dataMes = f.read()
+  return f'log_Folder\\log_{guild.name.replace(" ", "")}.txt'  # dataMes = f.read()
 
 
 async def leakAuditLog(message):
@@ -110,6 +111,10 @@ async def changeTrigger(message):
   botData.defaultTrigger = newTrigger
   await message.channel.send("```css\n[Trigger changed to " + botData.defaultTrigger + "]```")
 
+async def postSyncTubeLink(channel):
+  site = requests.get(botData.synctubeLink)
+  await channel.send(site.url)
+
 async def help(channel):
   
 
@@ -127,6 +132,7 @@ async def help(channel):
   embed.add_field(name="[" + botData.defaultTrigger + "meme]", value="Zeigt ein zufälliges Meme", inline=False)
   embed.add_field(name="[" + botData.defaultTrigger + "nsfw]", value="Zeigt ein zufälliges NSFW Fanart", inline=False)
   embed.add_field(name="[" + botData.defaultTrigger + "reaction]", value="Zeigt ein zufälliges Reaction Image", inline=False)
+  embed.add_field(name="[" + botData.defaultTrigger + "synctube]", value="Stellt einen Link zu SyncTube zu verfügung", inline=False)
 
   await channel.send(embed=embed)
 
@@ -168,6 +174,11 @@ async def on_message(message):
 
   if message.content == (botData.defaultTrigger + "reaction"):
     await postRandomImg(message.channel, botData.imgType["reaction"])
+
+  if message.content == (botData.defaultTrigger + "synctube"):
+    await postSyncTubeLink(message.channel)
+
+  
 
 
 bot.run("ODQ4ODY2MTA5MjEwMDk5NzQz.YLS2Kw.InfAqkwFDL8HLdsMnSpDa6CHLl8")
