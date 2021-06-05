@@ -1,14 +1,22 @@
 import discord
 
-tuuxic = "Tuuxic"
+# Bot
+TOKEN = "ODQ4ODY2MTA5MjEwMDk5NzQz.YLS2Kw.InfAqkwFDL8HLdsMnSpDa6CHLl8"
 
+# Admin
+adminName = "Tuuxic"
+
+# Default values
 defaultTrigger = "$"
-
 leakServer = 577069622105210900
 
+# Selenium
 driverPATH = "C:\\Program Files (x86)\\chromedriver.exe" 
-synctubeLink = "https://sync-tube.de/create"
 
+# Functionality
+defaultImgPATH = "C:\\Users\\prjan\\Pictures\\Bot"
+imgDirectoryPATH = "E:\\PCBackup\\Sachen\\Bilder\\Img"
+synctubeLink = "https://sync-tube.de/create"
 
 auditLogCategory = {
   discord.AuditLogActionCategory.create: "Create: ",
@@ -55,7 +63,6 @@ actionType = {
   discord.AuditLogAction.guild_update:        "Update Server",
   None:                                       "Unknown action"
 }
-
 
 imgType = {
   "img": "Fanart",

