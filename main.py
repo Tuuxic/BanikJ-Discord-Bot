@@ -7,15 +7,17 @@ import requests
 
 bot = discord.Client()
 
-async def SchereSteinPapier(message):
+def formatCSS(message):
+  return "```css\n" + message + "```"
+
+async def schereSteinPapier(message):
   choices = ["schere", "stein", "papier"]
   compChoice = choice(choices)
-  await message.channel.send("""
-```css
+  await message.channel.send(
+  formatCSS("""
 Ok lass uns spielen!
 Ich habe meine Auswahl schon getroffen. Nun bist du dran!
-[Schere, Stein oder Papier]? ```
-  """)
+[Schere, Stein oder Papier]?"""))
   
   def check(m):
     return m.content.lower() in choices and m.channel == message.channel and message.author == m.author
@@ -26,34 +28,28 @@ Ich habe meine Auswahl schon getroffen. Nun bist du dran!
     return
 
   msg = msg.content.lower()
+  answer = ""
   if msg == "schere":
-    if compChoice == "schere":
-      await message.channel.send("```css\n[Unentschieden] :/. Ich hatte [Schere] gewählt```")
-    elif compChoice == "stein":
-      await message.channel.send("```css\n[Leider Verloren] :(. Ich hatte Stein gewählt```")
-    elif compChoice == "papier":
-      await message.channel.send("```css\n[Yaay du hast Gewonnen]! Ich hatte Papier gewählt :D```")
+    if compChoice == "schere":    answer = formatCSS("[Unentschieden] :/. Ich hatte [Schere] gewählt")
+    elif compChoice == "stein":   answer = formatCSS("[Leider Verloren] :(. Ich hatte Stein gewählt")
+    elif compChoice == "papier":  answer = formatCSS("[Yaay du hast Gewonnen]! Ich hatte Papier gewählt :D")
   elif msg == "stein":
-    if compChoice == "schere":
-      await message.channel.send("```css\n[Yaay du hast Gewonnen]! Ich hatte Schere gewählt :D```")
-    elif compChoice == "stein":
-      await message.channel.send("```css\n[Leider Unentschieden] :/. Ich hatte Stein gewählt```")
-    elif compChoice == "papier":
-      await message.channel.send("```css\n[Leider Verloren] :(. Ich hatte Papier gewählt```")
+    if compChoice == "schere":    answer = formatCSS("[Yaay du hast Gewonnen]! Ich hatte Schere gewählt :D")
+    elif compChoice == "stein":   answer = formatCSS("[Leider Unentschieden] :/. Ich hatte Stein gewählt")
+    elif compChoice == "papier":  answer = formatCSS("[Leider Verloren] :(. Ich hatte Papier gewählt")
   elif msg == "papier":
-    if compChoice == "schere":
-      await message.channel.send("```css\n[Leider Verloren] :(. Ich hatte Schere gewählt```")
-    elif compChoice == "stein":
-      await message.channel.send("```css\n[Yaay du hast Gewonnen]! Ich hatte Stein gewählt :D```")
-    elif compChoice == "papier":
-      await message.channel.send("```css\n[Leider Unentschieden] :/. Ich hatte Papier gewählt```")
+    if compChoice == "schere":    answer = formatCSS("[Leider Verloren] :(. Ich hatte Schere gewählt")
+    elif compChoice == "stein":   answer = formatCSS("[Yaay du hast Gewonnen]! Ich hatte Stein gewählt :D")
+    elif compChoice == "papier":  answer = formatCSS("[Leider Unentschieden] :/. Ich hatte Papier gewählt")
   else:
-    message.channel.send("```css\n[Ups]! Etwas ist schiefgelaufen ¯\_(ツ)_/¯```")
+    answer = formatCSS("[Ups]! Etwas ist schiefgelaufen ¯\_(ツ)_/¯")
+  await message.channel.send(answer)
+  
 
 
 async def saveAuditLog(guild):
 
-  with open(f'log_Folder\\log_{guild.name.replace(" ", "")}.txt', 'w+') as f:
+  with open("log_Folder\\log_{}.txt".format(guild.name.replace(" ", "")), 'w+') as f:
 
     async for entry in guild.audit_logs(limit=100):
 
@@ -67,7 +63,7 @@ async def saveAuditLog(guild):
 
       f.write("\n")
     
-  return f'log_Folder\\log_{guild.name.replace(" ", "")}.txt'
+  return "log_Folder\\log_{}.txt".format(guild.name.replace(" ", ""))
 
 
 async def leakAuditLog(message):
@@ -88,41 +84,48 @@ async def postRandomImg(channel, imgType):
   dirs = os.listdir(path)
   
   img = None
-  foundFile = False
   maxLoops = 100
-  loops = 0
 
-  while not foundFile:
+  for _ in range(maxLoops):
     img = choice(dirs)
-    if img.endswith(('.png', '.jpg', '.jpeg', '.bmp')) or loops >= maxLoops :
-      foundFile = True
-    loops = loops + 1
+    if img.endswith(('.png', '.jpg', '.jpeg', '.bmp')):
+      break
 
   if img == None:
-    channel.send("```Sorry beim senden ist wohl ein Fehler aufgetreten.```")
+    await channel.send(formatCSS("[Error] Sorry beim senden ist wohl ein Fehler aufgetreten."))
     return
 
   print(img)
   with open(path + "\\" + img, "rb") as f:
+    
     try:
       pic = discord.File(f)
-      await channel.send(file=pic)
+      if path != settings.defaultImgPATH: await channel.send(file=pic)
+      else: await channel.send(formatCSS("[Error] Der Service ist gerade nicht verfügbar"), file=pic)
+      
     except:
-      await channel.send("```Sorry beim senden ist wohl ein Fehler aufgetreten.```")
+      await channel.send(formatCSS("[Error] Sorry beim senden ist wohl ein Fehler aufgetreten."))
 
 
 async def changeTrigger(message):
   newTrigger = message.content.split(settings.defaultTrigger + "changeTrigger")[1].replace(" ", "")
   if len(newTrigger) != 1:
-    await message.channel.send("```css\n[Illegal Trigger. Change cancelled]```")
+    await message.channel.send(formatCSS("[Illegal Trigger. Change cancelled]"))
     return
   settings.defaultTrigger = newTrigger
-  await message.channel.send("```css\n[Trigger changed to " + settings.defaultTrigger + "]```")
+  await message.channel.send(formatCSS("[Trigger changed to " + settings.defaultTrigger + "]"))
 
 
 async def postSyncTubeLink(channel):
   site = requests.get(settings.synctubeLink)
   await channel.send(site.url)
+
+
+async def coinflip(channel):
+  wahl = choice(["Zahl", "Kopf"])
+  message = formatCSS("Die Münze wurde geworfen und das Ergebnis war [{}]".format(wahl))
+
+  await channel.send(message)
 
 
 async def help(channel):
@@ -147,6 +150,8 @@ async def help(channel):
   await channel.send(embed=embed)
 
 
+# Discord Functions:
+
 @bot.event
 async def on_ready():
   game = discord.Game("¯\_(ツ)_/¯")
@@ -167,7 +172,7 @@ async def on_message(message):
     await leakAuditLog(message)
 
   if message.content == (settings.defaultTrigger + "game"):
-    await SchereSteinPapier(message)
+    await schereSteinPapier(message)
 
   if message.content.startswith(settings.defaultTrigger + "changeTrigger") and message.author.name == settings.adminName:
     await changeTrigger(message)
@@ -186,6 +191,9 @@ async def on_message(message):
 
   if message.content == (settings.defaultTrigger + "synctube"):
     await postSyncTubeLink(message.channel)
+  
+  if message.content == (settings.defaultTrigger + "coinflip"):
+    await coinflip(message.channel)
 
   
 bot.run(settings.TOKEN)
