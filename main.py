@@ -30,7 +30,7 @@ Ich habe meine Auswahl schon getroffen. Nun bist du dran!
   msg = msg.content.lower()
   answer = ""
   if msg == "schere":
-    if compChoice == "schere":    answer = formatCSS("[Unentschieden] :/. Ich hatte [Schere] gewählt")
+    if compChoice == "schere":    answer = formatCSS("[Unentschieden] :/. Ich hatte Schere gewählt")
     elif compChoice == "stein":   answer = formatCSS("[Leider Verloren] :(. Ich hatte Stein gewählt")
     elif compChoice == "papier":  answer = formatCSS("[Yaay du hast Gewonnen]! Ich hatte Papier gewählt :D")
   elif msg == "stein":
@@ -146,6 +146,7 @@ async def help(channel):
   embed.add_field(name="[" + settings.defaultTrigger + "nsfw]", value="Zeigt ein zufälliges NSFW Fanart", inline=False)
   embed.add_field(name="[" + settings.defaultTrigger + "reaction]", value="Zeigt ein zufälliges Reaction Image", inline=False)
   embed.add_field(name="[" + settings.defaultTrigger + "synctube]", value="Stellt einen Link zu SyncTube zu verfügung", inline=False)
+  embed.add_field(name="[" + settings.defaultTrigger + "coinflip]", value="Wirft eine Münze. Nützlich für wichtige Lebensentscheidungen", inline=False)
 
   await channel.send(embed=embed)
 
