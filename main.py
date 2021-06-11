@@ -1,6 +1,8 @@
 import os
+import re
 import asyncio
 import discord
+from discord import channel
 import settings
 from random import choice
 import requests
@@ -125,12 +127,17 @@ async def postNHentaiLink(channel, digits):
     await channel.send(formatCSS("Sorry diese Nummer entspricht nicht dem nHentai-Format."))
     return
   
-  nh = requests.get(settings.nhentaiLink + digits)
+  nh = requests.get(settings.nhentaiLink + "g/" + digits)
 
   if nh.status_code == 404:
     await channel.send(formatCSS("Sorry es gibt keine Dōjinshi mit dieser Nummer."))
     return
 
+  await channel.send(nh.url)
+
+
+async def postRandomNHentaiLink(channel):
+  nh = requests.get(settings.nhentaiLink + "random")
   await channel.send(nh.url)
   
 
@@ -160,7 +167,7 @@ async def help(channel):
   embed.add_field(name="[" + settings.defaultTrigger + "reaction]", value="Zeigt ein zufälliges Reaction Image", inline=False)
   embed.add_field(name="[" + settings.defaultTrigger + "synctube]", value="Stellt einen Link zu SyncTube zu verfügung", inline=False)
   embed.add_field(name="[" + settings.defaultTrigger + "coinflip]", value="Wirft eine Münze. Nützlich für wichtige Lebensentscheidungen", inline=False)
-  embed.add_field(name="[" + settings.defaultTrigger + "nhentai]", value="Nimmt 6-stellige Nummer entgegen und liefert einen Dōjinshi zurück", inline=False)
+  embed.add_field(name="[" + settings.defaultTrigger + "nhentai]", value="find - Nimmt 6-stellige Nummer entgegen und liefert einen Dōjinshi zurück\nrandom - Sucht ein random Dōjinshi", inline=False)
 
   await channel.send(embed=embed)
 
@@ -210,8 +217,11 @@ async def on_message(message):
   if message.content == (settings.defaultTrigger + "coinflip"):
     await coinflip(message.channel)
 
-  if message.content.startswith(settings.defaultTrigger + "nhentai "):
-    await postNHentaiLink(message.channel, message.content.split(" ")[1])
+  if bool(re.compile("\\" + settings.defaultTrigger + settings.nhentaiCmdFindRegex).match(message.content)):
+    await postNHentaiLink(message.channel, message.content.split(" ")[2])
+  
+  if bool(re.compile("\\" + settings.defaultTrigger + settings.nhentaiCmdRandomRegex).match(message.content)):
+    await postRandomNHentaiLink(message.channel)
 
 
   

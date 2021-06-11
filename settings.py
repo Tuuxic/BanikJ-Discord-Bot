@@ -9,15 +9,18 @@ adminName = "Tuuxic"
 # Default values
 defaultTrigger = "$"
 leakServer = 577069622105210900
+defaultImgPATH = "C:\\Users\\prjan\\Pictures\\Bot"
 
 # Selenium
 driverPATH = "C:\\Program Files (x86)\\chromedriver.exe" 
 
 # Functionality
-defaultImgPATH = "C:\\Users\\prjan\\Pictures\\Bot"
 imgDirectoryPATH = "E:\\PCBackup\\Sachen\\Bilder\\Img"
 synctubeLink = "https://sync-tube.de/create"
-nhentaiLink = "https://nhentai.net/g/"
+nhentaiLink = "https://nhentai.net/"
+
+nhentaiCmdFindRegex = r"(nhentai) (find) ([0-9]*)"
+nhentaiCmdRandomRegex = r"nhentai random"
 
 auditLogCategory = {
   discord.AuditLogActionCategory.create: "Create: ",
