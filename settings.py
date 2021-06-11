@@ -17,6 +17,7 @@ driverPATH = "C:\\Program Files (x86)\\chromedriver.exe"
 defaultImgPATH = "C:\\Users\\prjan\\Pictures\\Bot"
 imgDirectoryPATH = "E:\\PCBackup\\Sachen\\Bilder\\Img"
 synctubeLink = "https://sync-tube.de/create"
+nhentaiLink = "https://nhentai.net/g/"
 
 auditLogCategory = {
   discord.AuditLogActionCategory.create: "Create: ",

@@ -120,6 +120,19 @@ async def postSyncTubeLink(channel):
   site = requests.get(settings.synctubeLink)
   await channel.send(site.url)
 
+async def postNHentaiLink(channel, digits):
+  if len(digits) != 6 or not digits.isnumeric():
+    await channel.send(formatCSS("Sorry diese Nummer entspricht nicht dem nHentai-Format."))
+    return
+  
+  nh = requests.get(settings.nhentaiLink + digits)
+
+  if nh.status_code == 404:
+    await channel.send(formatCSS("Sorry es gibt keine Dōjinshi mit dieser Nummer."))
+    return
+
+  await channel.send(nh.url)
+  
 
 async def coinflip(channel):
   wahl = choice(["Zahl", "Kopf"])
@@ -147,6 +160,7 @@ async def help(channel):
   embed.add_field(name="[" + settings.defaultTrigger + "reaction]", value="Zeigt ein zufälliges Reaction Image", inline=False)
   embed.add_field(name="[" + settings.defaultTrigger + "synctube]", value="Stellt einen Link zu SyncTube zu verfügung", inline=False)
   embed.add_field(name="[" + settings.defaultTrigger + "coinflip]", value="Wirft eine Münze. Nützlich für wichtige Lebensentscheidungen", inline=False)
+  embed.add_field(name="[" + settings.defaultTrigger + "nhentai]", value="Nimmt 6-stellige Nummer entgegen und liefert einen Dōjinshi zurück", inline=False)
 
   await channel.send(embed=embed)
 
@@ -195,6 +209,10 @@ async def on_message(message):
   
   if message.content == (settings.defaultTrigger + "coinflip"):
     await coinflip(message.channel)
+
+  if message.content.startswith(settings.defaultTrigger + "nhentai "):
+    await postNHentaiLink(message.channel, message.content.split(" ")[1])
+
 
   
 bot.run(settings.TOKEN)
