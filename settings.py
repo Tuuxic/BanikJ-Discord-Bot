@@ -7,7 +7,7 @@ TOKEN = "ODQ4ODY2MTA5MjEwMDk5NzQz.YLS2Kw.InfAqkwFDL8HLdsMnSpDa6CHLl8"
 adminName = "Tuuxic"
 
 # Default values
-defaultTrigger = "$"
+trigger = "$"
 leakServer = 577069622105210900
 defaultImgPATH = "C:\\Users\\prjan\\Pictures\\Bot"
 
@@ -15,12 +15,12 @@ defaultImgPATH = "C:\\Users\\prjan\\Pictures\\Bot"
 driverPATH = "C:\\Program Files (x86)\\chromedriver.exe" 
 
 # Functionality
-imgDirectoryPATH = "E:\\PCBackup\\Sachen\\Bilder\\Img"
+imgDirPATH = "E:\\PCBackup\\Sachen\\Bilder\\Img"
 synctubeLink = "https://sync-tube.de/create"
 nhentaiLink = "https://nhentai.net/"
 
-nhentaiCmdFindRegex = r"(nhentai) (find) ([0-9]*)"
-nhentaiCmdRandomRegex = r"nhentai random"
+nhFindRx = r"nhentai find ([0-9]*)"
+nhRandRx = r"nhentai random"
 
 auditLogCategory = {
   discord.AuditLogActionCategory.create: "Create: ",

